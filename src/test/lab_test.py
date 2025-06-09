@@ -2,8 +2,16 @@ import os.path
 import sqlite3
 import csv
 import unittest
+import sys
 
-from src.main.main import load_and_clean_users, return_cursor, load_and_clean_call_logs, write_ordered_calls, write_user_analytics
+# Add the correct paths to import from main.py
+current_dir = os.path.dirname(os.path.abspath(__file__))
+main_dir = os.path.join(current_dir, '..', 'main')
+project_root = os.path.join(current_dir, '..', '..')
+sys.path.insert(0, main_dir)
+sys.path.insert(0, project_root)
+
+from main import load_and_clean_users, return_cursor, load_and_clean_call_logs, write_ordered_calls, write_user_analytics
 
 
 class ProjectTests(unittest.TestCase):
@@ -70,7 +78,7 @@ class ProjectTests(unittest.TestCase):
     def test_calllogs_table_has_clean_data(self):
         base_dir = os.path.dirname(os.path.abspath(__file__))
 
-        # Construct the absolute path to testUsers.csv
+        # Construct the absolute path to testCallLogs.csv
         abs_file_path = os.path.join(base_dir,'testCallLogs.csv')
 
         # invoke load_and_clean_call_logs, with testCallLogs.csv
@@ -121,7 +129,7 @@ class ProjectTests(unittest.TestCase):
         # order user_analytics by userId ascending
         user_analytics.sort(key=lambda x: int(x[0]))
 
-        # ensure that the record with userId 4 has an avgDuration of 55 and a count of 2
+        # ensure that the record with userId 1 has an avgDuration of 105.0 and a count of 4
         self.assertEqual(105.0, float(user_analytics[0][1]))
         self.assertEqual(4, int(user_analytics[0][2]))
 
@@ -129,7 +137,7 @@ class ProjectTests(unittest.TestCase):
         self.assertEqual(42.5, float(user_analytics[1][1]))
         self.assertEqual(4, int(user_analytics[1][2]))
 
-        # ensure that the record with userId 1 has an avgDuration of 105.0 and a count of 4
+        # ensure that the record with userId 4 has an avgDuration of 55.0 and a count of 2
         self.assertEqual(55.0, float(user_analytics[2][1]))
         self.assertEqual(2, int(user_analytics[2][2]))
 
@@ -170,3 +178,12 @@ class ProjectTests(unittest.TestCase):
         self.assertTrue(int(ordered_calls[0][2]) < int(ordered_calls[1][2]))
         # Assert that the startTime in the penultimate record is < the startTime in the last record
         self.assertTrue(int(ordered_calls[-2][2]) < int(ordered_calls[-1][2]))
+
+
+# This is the main execution block that was missing
+if __name__ == '__main__':
+    print("🔍 Running Call Center Project Tests")
+    print("="*50)
+    
+    # Run the tests with verbose output
+    unittest.main(verbosity=2)
